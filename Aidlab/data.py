@@ -1,12 +1,32 @@
+def calculate_temperature(data):
+    bytes = bytearray(data)
+
+    Tobj = float( int(bytes[1]) << 8 | int(bytes[0]) )
+    Tobj *= 0.02
+    Tobj -= 273.15
+    
+    Tamb = float( int(bytes[3]) << 8 | int(bytes[2]) )
+    Tamb *= 0.02
+    Tamb -= 273.15
+        
+    return [Tobj, Tamb]
+
+def calculate_respiration(data):
+    # We can resue `calculate_ecg`
+    return calculate_ecg(data)
+
 def calculate_ecg(data):
     bytesPerSample = 3
     totalBytes = 18
 
+    ecgs = []
     for i in range(0, totalBytes/bytesPerSample):
         byteA = bytearray(data)[i*bytesPerSample + 2]
         byteB = bytearray(data)[i*bytesPerSample + 1]
         byteC = bytearray(data)[i*bytesPerSample + 0]
-        return ecg_sample_from_bytes(byteA, byteB, byteC)
+        ecgs.append(ecg_sample_from_bytes(byteA, byteB, byteC))
+    
+    return ecgs
 
 def ecg_sample_from_bytes(byteA, byteB, byteC):
 
@@ -41,6 +61,10 @@ def q30ToFloat(byteA, byteB, byteC, byteD):
         byteC & 0xFF) << 8 | (byteD & 0xFF)
     q30 = toSigned32(q30)
     return q30 / float(1 << 30)
+    
+def calculate_battery(data):
+    bytes = bytearray(data)
+    return float( int(bytes[1]) << 8 | int(bytes[0]) ) / 10.0
 
 def calculate_motion(data):
 

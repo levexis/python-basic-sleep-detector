@@ -3,7 +3,7 @@ from time import sleep, time
 from datetime import datetime
 
 
-def onReceivedCharacteristic(name, value):
+def onReceivedCharacteristic(aidlab, name, value):
     if name == "motion":
         naiveSleepDetector(value)
 
